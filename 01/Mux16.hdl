@@ -14,5 +14,6 @@ CHIP Mux16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    	Not(in=sel, out=notSel);
+    	And(a=a[0], b=notSel, out=aa1);
 }
