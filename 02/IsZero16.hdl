@@ -1,0 +1,15 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/Adder16.hdl
+
+ CHIP IsZero16 {
+    IN in[16];
+    OUT out;
+
+    PARTS:
+  	Or8Way(in=in[0..7], out=firstHalf);
+	Or8Way(in=in[8..15], out=secondHalf);
+	Or(a=firstHalf, b=secondHalf, out=negatedIsZero);
+	Not(in=negatedIsZero, out=out); 
+}
