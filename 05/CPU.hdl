@@ -39,5 +39,42 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+        Mux(a=false, b=instruction[0], sel=instruction[15], out=decInst0);
+        Mux(a=false, b=instruction[1], sel=instruction[15], out=decInst1);
+        Mux(a=false, b=instruction[2], sel=instruction[15], out=decInst2);
+        Mux(a=false, b=instruction[3], sel=instruction[15], out=decInst3);
+        Mux(a=false, b=instruction[4], sel=instruction[15], out=decInst4);
+        Mux(a=false, b=instruction[5], sel=instruction[15], out=decInst5);
+        Mux(a=false, b=instruction[6], sel=instruction[15], out=decInst6);
+        Mux(a=false, b=instruction[7], sel=instruction[15], out=decInst7);
+        Mux(a=false, b=instruction[8], sel=instruction[15], out=decInst8);
+        Mux(a=false, b=instruction[9], sel=instruction[15], out=decInst9);
+        Mux(a=false, b=instruction[10], sel=instruction[15], out=decInst10);
+        Mux(a=false, b=instruction[11], sel=instruction[15], out=decInst11);
+        Mux(a=false, b=instruction[12], sel=instruction[15], out=decInst12);
+        Mux(a=false, b=instruction[13], sel=instruction[15], out=decInst13);
+
+        And(a=decInst3, b=true, out=writeM); 
+        Mux16(a=false , b=instruction , sel=instruction[15] , out=decInst);
+        ALU(x=outD, y=outAM, zx=decInst11, nx=decInst10, zy=decInst9, ny=decInst8, f=decInst7, no=decInst6, out=aluOut, zr=zero, ng=neg);
+        And16(a=aluOut, b=true, out=outM);
+        PC(in=outA, load=jmp, inc=true, reset=reset, out[0..14]=pc);
+        Not(in=instruction[15], out=notOpCode);
+        Or(a=decInst5, b=notOpCode, out=regALoad);
+        ARegister(in=muxA, load=regALoad, out=outA); // A register
+        DRegister(in=aluOut, load=decInst4, out=outD); // D register
+        Mux16(a=instruction, b=aluOut, sel=instruction[15], out=muxA); // before A
+        Mux16(a=outA, b=inM, sel=decInst12, out=outAM); // A/M
+        And16(a=outA, b=true, out[0..14]=addressM);
+
+        And(a=neg, b=decInst2, out=jmpNE);
+        And(a=zero, b=decInst1, out=jmpEQ);
+        Not(in=neg, out=notNeg);
+        Not(in=zero, out=notZero);
+        And(a=notNeg, b=notZero, out=gZ);
+        And(a=gZ, b=decInst0, out=jmpGZ);
+        Or(a=jmpNE, b=jmpEQ, out=jmpLE);
+        Or(a=jmpLE, b=jmpGZ, out=jmp);
+
+
 }
